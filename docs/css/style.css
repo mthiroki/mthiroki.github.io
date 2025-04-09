@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+body {
+  font-family: "sans-serif" ;
+  }
+  
+body {
+    background-color: #AFEEEE;
+  }
+
+body {
+    font-weight: normal;
+  }
+
+  p {
+    line-height: 2;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
