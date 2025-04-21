@@ -1,0 +1,131 @@
+<html>
+
+<head>
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KJGJHYP6BV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KJGJHYP6BV');
+</script>
+  <link rel="stylesheet" href="css/style.css">
+  <title>Hiroki Matsui</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+
+<body>
+  <h1>
+    <center>Hiroki Matsui</center>
+  </h1>
+
+  <p style="text-align:right">
+    <td align="right"><a href="links_j.html">Japanese</a></td> /
+    <td align="right">English</a></td>
+    </p> 
+
+  <HR color="blue">
+  <table align="center">
+    <tr>
+      <td width="150"><a href="index.html">Home</a></td>
+      <td width="130"><a href="CV.html">CV</td>
+      <td width="150"><a href="publ.html">Papers</a></td>
+      <td width="220"><a href="education.html">Education (JPN)</a></td>
+      <td width="0">Links</a></td>
+    </tr>
+  </table>
+  <HR color="blue">
+
+
+    <h1>ランダム行列とその積</h1>
+
+    <script>
+      // 行列生成
+      function generateRandomMatrix(rows, cols, min = -9, max = 9) {
+        const matrix = [];
+        for (let i = 0; i < rows; i++) {
+          const row = [];
+          for (let j = 0; j < cols; j++) {
+            row.push(Math.floor(Math.random() * (max - min + 1)) + min);
+          }
+          matrix.push(row);
+        }
+        return matrix;
+      }
+    
+      // 行列をLaTeX表記に変換
+      function matrixToLatex(matrix) {
+        const rows = matrix.map(row => row.join(" & ")).join(" \\\\ ");
+        return `\\left( \\begin{array}{${'c'.repeat(matrix[0].length)}} ${rows} \\end{array} \\right)`;
+      }
+    
+      // 積
+      function multiplyMatrices(A, B) {
+        const result = [];
+        for (let i = 0; i < A.length; i++) {
+          const row = [];
+          for (let j = 0; j < B[0].length; j++) {
+            let sum = 0;
+            for (let k = 0; k < A[0].length; k++) {
+              sum += A[i][k] * B[k][j];
+            }
+            row.push(sum);
+          }
+          result.push(row);
+        }
+        return result;
+      }
+    
+      // 問題生成
+      function generateProblems(n = 3) {
+        const list = document.getElementById("problem-list");
+        list.innerHTML = ""; // 一旦リセット
+    
+        for (let i = 0; i < n; i++) {
+          const A = generateRandomMatrix(2, 2);
+          const B = generateRandomMatrix(2, 2);
+          const AB = multiplyMatrices(A, B);
+    
+          const latexQuestion = matrixToLatex(A) + " \\times " + matrixToLatex(B) + " =\\ ?";
+          const latexAnswer = matrixToLatex(AB);
+    
+          const li = document.createElement("li");
+    
+          const problemDiv = document.createElement("div");
+          problemDiv.className = "matrix";
+          problemDiv.innerHTML = `\\[${latexQuestion}\\]`;
+    
+          const button = document.createElement("button");
+          button.innerText = "答えを表示する";
+    
+          const answerDiv = document.createElement("div");
+          answerDiv.className = "matrix";
+          answerDiv.style.display = "none";
+          answerDiv.innerHTML = `\\[${latexAnswer}\\]`;
+    
+          button.onclick = () => {
+            answerDiv.style.display = "block";
+            MathJax.typeset();
+          };
+    
+          li.appendChild(problemDiv);
+          li.appendChild(button);
+          li.appendChild(answerDiv);
+    
+          list.appendChild(li);
+        }
+    
+        MathJax.typeset(); // 数式レンダリング
+      }
+    
+      window.onload = () => generateProblems();
+    </script>
+    
+  </body>
+
+　</html>

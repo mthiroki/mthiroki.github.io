@@ -18,3 +18,14 @@ body {
     margin-bottom: 4px;
   }
 
+  ol.bracket li {
+    position: relative;
+    list-style-type: none;
+  }
+  
+  ol.bracket li:before {
+    position: absolute;
+    right: calc(100% + 0.5rem);  /* 0.5remは連番とテキストとの余白 */
+    content: "(" counter(list-item) ")";
+  }
+  
