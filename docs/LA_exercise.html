@@ -1,0 +1,346 @@
+<html>
+
+<head>
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KJGJHYP6BV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KJGJHYP6BV');
+</script>
+  <link rel="stylesheet" href="css/style.css">
+  <title>Hiroki Matsui</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.1.0/math.js"></script>
+</head>
+
+<body>
+  <h1>
+    <center>Hiroki Matsui</center>
+  </h1>
+
+  <p style="text-align:right">
+    <td align="right"><a href="links_j.html">Japanese</a></td> /
+    <td align="right">English</a></td>
+    </p> 
+
+  <HR color="blue">
+  <table align="center">
+    <tr>
+      <td width="150"><a href="index.html">Home</a></td>
+      <td width="130"><a href="CV.html">CV</td>
+      <td width="150"><a href="publ.html">Papers</a></td>
+      <td width="220"><a href="education.html">Education (JPN)</a></td>
+      <td width="0">Links</a></td>
+    </tr>
+  </table>
+  <HR color="blue">
+
+
+<h1>線形代数学の演習問題</h1>
+ページをリロードするとランダムに問題が生成されます
+
+<h2>行列の演算</h2>
+<ol class="bracket" id="problem-list-1"></ol>
+
+<h2>行列の階数</h2>
+<ol class="bracket" id="problem-list-2" start="9"></ol>
+
+<h2>逆行列</h2>
+<ol class="bracket" id="problem-list-3" start="12"></ol>
+
+<h2>行列式</h2>
+<ol class="bracket" id="problem-list-4" start="15"></ol>
+
+<script>
+  function generateRandomMatrix(rows, cols, min = -9, max = 9) {
+    return Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => Math.floor(Math.random() * (max - min + 1)) + min)
+    );
+  }
+
+  //階数rのランダム行列の生成
+  function generateMatrixWithRank(m, n,k, rank) {
+  const U = generateRandomMatrix(m, rank, -k, k);  // -5〜5 の乱数
+  const V = generateRandomMatrix(rank, n, -k, k);  // -5〜5 の乱数
+  return multiplyMatrices(U, V);
+}
+  
+  //正則行列を生成
+  function generateInvertibleMatrix(n) {
+  let matrix;
+  let determinant;
+  do {
+    matrix = generateRandomMatrix(n, n, -9, 9);  // -5〜5 の範囲で行列を生成
+    determinant = math.det(matrix);  // 行列式を計算
+  } while (determinant === 0);  // 行列式がゼロでないことを確認
+
+  return matrix;
+}
+
+function generateSimpleInvertibleMatrix(n,k,l) {
+  let matrix;
+  let determinant;
+  do {
+    // 行列の生成: -5〜5の整数成分を持つランダムな行列
+    matrix = generateRandomMatrix(n, n, -k, k);
+    determinant = math.det(matrix);  // 行列式を計算
+  } while (Math.abs(determinant) !== l);  // 行列式が1または-1である行列を生成
+
+  return matrix;
+}
+
+
+  function multiplyMatrices(A, B) {
+    return A.map((row, i) =>
+      B[0].map((_, j) =>
+        row.reduce((sum, _, k) => sum + A[i][k] * B[k][j], 0)
+      )
+    );
+  }
+
+  function addMatrices(A, B) {
+    return A.map((row, i) => row.map((val, j) => val + B[i][j]));
+  }
+
+  // スカラー倍を行う関数
+  function scalarMultiplyMatrix(A, scalar) {
+    return A.map(row => row.map(val => val * scalar));
+  }
+
+  // 行列の転置を計算する関数
+  function transposeMatrix(A) {
+    return A[0].map((_, colIndex) => A.map(row => row[colIndex]));
+  }
+
+  // 行列Aの階数を計算する関数
+  function computeRank(A) {
+  const rowCount = A.length;
+  const colCount = A[0].length;
+
+  // 行列のコピー（破壊的変更を避ける）
+  let B = A.map(row => row.slice());
+
+  let rank = 0;
+  let row = 0;
+
+  for (let col = 0; col < colCount && row < rowCount; col++) {
+    // ピボット探し
+    let pivotRow = row;
+    while (pivotRow < rowCount && B[pivotRow][col] === 0) {
+      pivotRow++;
+    }
+
+    if (pivotRow === rowCount) {
+      continue; // ピボットなし（この列はスキップ）
+    }
+
+    // 行を入れ替える
+    [B[row], B[pivotRow]] = [B[pivotRow], B[row]];
+
+    // ピボットの正規化と他の行の消去
+    for (let i = 0; i < rowCount; i++) {
+      if (i !== row && B[i][col] !== 0) {
+        const factor = B[i][col] / B[row][col];
+        for (let j = col; j < colCount; j++) {
+          B[i][j] -= factor * B[row][j];
+        }
+      }
+    }
+    row++;
+    rank++;
+  }
+  return rank;
+}
+
+
+  function matrixToLatex(matrix) {
+    const rows = matrix.map(row => row.join(" & ")).join(" \\\\ ");
+    return `\\left( \\begin{array}{${'c'.repeat(matrix[0].length)}} ${rows} \\end{array} \\right)`;
+  }
+  
+  function matrixToLatexWithFractions(matrix) {
+  const rows = matrix.map(row => 
+    row.map(value => {
+      const fraction = math.fraction(value);  // 分数に変換
+      let sign = fraction.s < 0 ? "-" : "";  // 符号を取得
+      let numerator = Math.abs(fraction.n);  // 分子の絶対値
+      let denominator = fraction.d;  // 分母
+
+      // 分数形式として表示
+      return denominator === 1 ? `${sign}${numerator}` : `${sign}${numerator}/${denominator}`;
+    }).join(" & ")
+  ).join(" \\\\ ");
+  return `\\left( \\begin{array}{${'c'.repeat(matrix[0].length)}} ${rows} \\end{array} \\right)`;
+}
+
+  function renderMatrix(id, latex) {
+    document.getElementById(id).innerHTML = `\\[${latex}\\]`;
+    MathJax.typeset();
+  }
+
+
+  function generateProblem(problemNumber, listId) {
+    let A, B, C, D, result, latex, questionWithPlaceholder;
+ 
+    if (problemNumber === 1) {
+      A = generateRandomMatrix(2, 2);
+      result = transposeMatrix(A);
+      questionWithPlaceholder = matrixToLatex(A) + "の転置行列" + "= \\text{?}";
+    }
+    if (problemNumber === 2) {
+      A = generateRandomMatrix(3, 3);
+      result = transposeMatrix(A);
+      questionWithPlaceholder = matrixToLatex(A) + "の転置行列" + "= \\text{?}";
+    }
+    if (problemNumber === 3) {
+      A = generateRandomMatrix(4, 3);
+      result = transposeMatrix(A);
+      questionWithPlaceholder = matrixToLatex(A) + "の転置行列" + "= \\text{?}";
+    }
+    if (problemNumber === 4) {
+      A = generateRandomMatrix(2, 2);
+      B = generateRandomMatrix(2, 2);
+      result = addMatrices(A, B);
+      questionWithPlaceholder = matrixToLatex(A) + " + " + matrixToLatex(B) + " = \\text{?}";
+    }
+    if (problemNumber === 5) {
+      A = generateRandomMatrix(2, 2);
+      B = generateRandomMatrix(2, 2);
+      scalar = Math.floor(Math.random() * 9) + 1; // 1から9までのスカラー
+      const sB = scalarMultiplyMatrix(B, scalar);
+      result = addMatrices(A, sB);
+      questionWithPlaceholder = matrixToLatex(A) + " + " + scalar + matrixToLatex(B) + " = \\text{?}";
+    }
+    if (problemNumber === 6) {
+      A = generateRandomMatrix(2, 2);
+      B = generateRandomMatrix(2, 2);
+      result = multiplyMatrices(A, B);
+      questionWithPlaceholder = matrixToLatex(A) + matrixToLatex(B) + " = \\text{?}";
+    }
+    if (problemNumber === 7) {
+      A = generateRandomMatrix(3, 3);
+      B = generateRandomMatrix(3, 3);
+      result = multiplyMatrices(A, B);
+      questionWithPlaceholder = matrixToLatex(A) + matrixToLatex(B) + " = \\text{?}";
+    }
+    if (problemNumber === 8) {
+      A = generateRandomMatrix(2, 3);
+      B = generateRandomMatrix(3, 2);
+      C = generateRandomMatrix(2, 2);
+      D = generateRandomMatrix(2, 2);
+      const AB = multiplyMatrices(A, B);
+      const CD = multiplyMatrices(C, D);
+      result = addMatrices(AB, CD);
+      questionWithPlaceholder = matrixToLatex(A) + matrixToLatex(B) + " + " + matrixToLatex(C) + matrixToLatex(D) + " = \\text{?}";
+    }
+    if (problemNumber === 9) {
+    A = generateRandomMatrix(2, 2);
+    const rank = computeRank(A);
+    result = rank;
+    questionWithPlaceholder = matrixToLatex(A) + " の階数 = \\text{?}";
+    }
+    if (problemNumber === 10) {
+    const desiredRank = Math.floor(Math.random() * 4) + 1;  // ランダムな階数（1〜4）
+    A = generateMatrixWithRank(3, 3,5, desiredRank);
+    result = desiredRank;
+    questionWithPlaceholder = matrixToLatex(A) + " の階数 = \\text{?}";
+    }
+    if (problemNumber === 11) {
+    const desiredRank = Math.floor(Math.random() * 4) + 1;  // ランダムな階数（1〜4）
+    A = generateMatrixWithRank(4, 5,4, desiredRank);
+    result = desiredRank;
+    questionWithPlaceholder = matrixToLatex(A) + " の階数 = \\text{?}";
+    }
+    if (problemNumber === 12) {
+      A = generateInvertibleMatrix(2)
+      const invA = math.inv(A);  // 逆行列を計算
+      result = matrixToLatexWithFractions(invA);
+      questionWithPlaceholder = matrixToLatex(A) + " の逆行列 = \\text{?}";
+    }
+    if (problemNumber === 13) {
+      const desiredDet = Math.floor(Math.random() * 3) + 1;  // ランダムな階数（1〜3）
+      A = generateSimpleInvertibleMatrix(3,3,desiredDet) ;
+      const invA = math.inv(A);  // 逆行列を計算
+      result = matrixToLatexWithFractions(invA);
+      questionWithPlaceholder = matrixToLatex(A) + " の逆行列 = \\text{?}";
+    }
+    if (problemNumber === 14) {
+      const desiredDet = Math.floor(Math.random() * 3) + 1;  // ランダムな階数（1〜4）
+      A = generateSimpleInvertibleMatrix(4,3,desiredDet) ;
+      const invA = math.inv(A);  // 逆行列を計算
+      result = matrixToLatexWithFractions(invA);
+      questionWithPlaceholder = matrixToLatex(A) + " の逆行列 = \\text{?}";
+    }
+    if (problemNumber === 15) {
+      A = generateRandomMatrix(2, 2,-9,9);
+    result = math.det(A); // 行列式を計算
+    questionWithPlaceholder = matrixToLatex(A) + " の行列式 = \\text{?}";
+    } 
+    if (problemNumber === 16) {
+      A = generateRandomMatrix(3, 3,-6,6);
+    result = math.det(A); // 行列式を計算
+    result = Math.round(result); // 四捨五入して整数に
+    questionWithPlaceholder = matrixToLatex(A) + " の行列式 = \\text{?}";
+    } 
+    if (problemNumber === 17) {
+      A = generateRandomMatrix(4, 4,-3,3);
+    result = math.det(A); // 行列式を計算
+    // 行列式を整数に丸める
+    result = Math.round(result); // 四捨五入して整数に
+    questionWithPlaceholder = matrixToLatex(A) + " の行列式 = \\text{?}";
+    } 
+  
+    // 問題のテンプレートを作成
+    const li = document.createElement("li");
+    const question = document.createElement("div");
+    question.id = `matrix-${problemNumber}`;
+    li.appendChild(question);
+
+   // 「答えを表示する」ボタンを作成
+   const button = document.createElement("button");
+      button.innerText = "答えを表示する";
+      button.onclick = () => {
+        let answerLatex;
+        if (Array.isArray(result)) {
+          answerLatex = matrixToLatex(result);
+        } else {
+          answerLatex = result;
+        }
+
+        const questionWithAnswer = questionWithPlaceholder.replace("\\text{?}", answerLatex);
+        renderMatrix(`matrix-${problemNumber}`, questionWithAnswer);
+      };
+      li.appendChild(button);
+
+
+    // 問題リストに問題を追加
+    document.getElementById(listId).appendChild(li);
+
+    // 最初は ? を含む問題を表示
+    renderMatrix(`matrix-${problemNumber}`, questionWithPlaceholder);
+  }
+
+  // ページ読み込み時に自動で問題を生成
+  window.onload = function () {
+    for (let i = 1; i <= 8; i++) {
+      generateProblem(i, "problem-list-1");
+    }
+    for (let i = 9; i <= 11; i++) {
+      generateProblem(i, "problem-list-2");
+    }
+    for (let i = 12; i <= 14; i++) {
+      generateProblem(i, "problem-list-3");
+    }
+    for (let i = 15; i <= 17; i++) {
+      generateProblem(i, "problem-list-4");
+    }
+  }
+</script>
+
+  </body>
+  </html>
